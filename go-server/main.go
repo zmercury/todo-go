@@ -5,13 +5,16 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 	"go-server/handlers"
 	"go-server/middleware"
-	"go-server/models"
 )
 
 func main() {
-	models.InitTodos()
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
 
 	router := mux.NewRouter()
 	router.Use(middleware.LogRequest)
@@ -23,8 +26,9 @@ func main() {
 	router.HandleFunc("/todos/{id}", handlers.DeleteTodo).Methods("DELETE")
 
 	log.Println("Server starting on http://localhost:6969")
-	err := http.ListenAndServe(":6969", router)
+	err = http.ListenAndServe(":6969", router)
 	if err != nil {
 		log.Fatalf("Server failed to start: %v", err)
 	}
 }
+
